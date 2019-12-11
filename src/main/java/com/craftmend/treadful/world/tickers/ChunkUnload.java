@@ -21,7 +21,7 @@ public class ChunkUnload implements InjectedTickable {
                 try {
                     instance.getChunkProvider().unloadChunks();
                 } catch (Exception e) {
-                    Bukkit.broadcastMessage(Message.PREFIX.getMessage()  + "Exception while handling unloadChunks. The server recovered, but please notify the plugin developer.");
+                    Message.toOp(Message.PREFIX.getMessage()  + "Exception while handling unloadChunks. The server recovered, but please notify the plugin developer.");
                 }
                 isRunning = false;
             });

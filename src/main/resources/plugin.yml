@@ -3,3 +3,9 @@ version: ${project.version}
 main: com.craftmend.treadful.Treadful
 description: A plugin that fixes Minecraft's horrible performance by injecting and replacing native server code with multithreaded logic.
 author: Mindgamesnl
+load: STARTUP
+commands:
+  treadful:
+permissions:
+  treadful.admin:
+    default: op

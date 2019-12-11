@@ -13,8 +13,6 @@ import org.bukkit.generator.ChunkGenerator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class WorldImplementation extends CustomWorldServer {
 
@@ -42,8 +40,8 @@ public class WorldImplementation extends CustomWorldServer {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
         scheduler.scheduleAtFixedRate(() -> {
-                doActualTick();
-                keepAlive();
+            doActualTick();
+            keepAlive();
         }, 50, 50, TimeUnit.MILLISECONDS);
     }
 
@@ -52,7 +50,7 @@ public class WorldImplementation extends CustomWorldServer {
             try {
                 tickable.tick(this);
             } catch (Exception e) {
-                Bukkit.broadcastMessage(Message.PREFIX.getMessage()  + "Exception while ticking " + tickable.getClass().getSimpleName() + ". The server recovered, but please notify the plugin developer.");
+                Message.toOp(Message.PREFIX.getMessage()  + "Exception while ticking " + tickable.getClass().getSimpleName() + ". The server recovered, but please notify the plugin developer.");
                 e.printStackTrace();
             }
         }

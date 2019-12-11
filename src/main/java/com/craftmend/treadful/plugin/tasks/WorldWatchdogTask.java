@@ -19,7 +19,7 @@ public class WorldWatchdogTask implements Runnable {
                 WorldImplementation wi = (WorldImplementation) craftWorld.getHandle();
 
                 if (Duration.between(wi.getLastTick(), Instant.now()).toMillis() > 1000) {
-                    Bukkit.broadcastMessage(Message.PREFIX.getMessage() + "World " + world.getName() + " didn't keep up. Please check the console for errors or possible crashes.");
+                    Message.toOp(Message.PREFIX.getMessage() + "World " + world.getName() + " didn't keep up. Please check the console for errors or possible crashes.");
                 }
             }
         }

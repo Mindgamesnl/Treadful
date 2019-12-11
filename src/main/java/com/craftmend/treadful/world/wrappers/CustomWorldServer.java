@@ -1,15 +1,18 @@
 package com.craftmend.treadful.world.wrappers;
 
+import com.craftmend.treadful.world.implementation.ImplementedWorldManager;
 import com.craftmend.treadful.world.interfaces.HotSwappable;
+import com.google.common.collect.Lists;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.World;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.generator.ChunkGenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -20,7 +23,7 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
     private Instant lastTick = Instant.now();
 
     // replacement fields
-    protected SpawnerCreature spawnerCreature;
+    private SpawnerCreature spawnerCreature;
 
     // reflection fields
     private Field playerChunkMapField;
@@ -52,6 +55,70 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
         playerChunkI.setAccessible(true);
 
         spawnerCreature = (SpawnerCreature) spawner.get(this);
+
+        u.replaceAll(a -> new ImplementedWorldManager(getMinecraftServer(), this));
+    }
+
+    @Override
+    public void a(Collection<Entity> collection) {
+        ArrayList arraylist = Lists.newArrayList(collection);
+        Iterator iterator = arraylist.iterator();
+
+        while (iterator.hasNext()) {
+            Entity entity = (Entity) iterator.next();
+            if (this.j(entity)) {
+                this.entityList.add(entity);
+                this.b(entity);
+            }
+        }
+    }
+
+    @Override
+    public boolean addEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) {
+        if (j(entity)) {
+                super.addEntity(entity, spawnReason);
+            return true;
+        }
+        return true;
+    }
+
+    private boolean j(Entity entity) {
+        if (entity.dead) {
+            return false;
+        } else {
+            if (entitiesById.get(entity.getId()) != null) {
+                Entity entity1 = (Entity) entitiesById.get(entity.getId());
+                if (this.f.contains(entity1)) {
+                    this.f.remove(entity1);
+                } else {
+                    if (!(entity instanceof EntityHuman)) {
+                        return false;
+                    }
+
+                    System.out.println(String.format("Force-added player with duplicate UUID {}", entity.toString()));
+                }
+
+                this.removeEntity(entity1);
+            }
+
+            return true;
+        }
+    }
+
+    @Override
+    public void kill(Entity entity) {
+        scheduleSync(() -> {
+            super.kill(entity);
+        });
+
+    }
+
+    @Override
+    public void removeEntity(Entity entity) {
+        scheduleSync(() -> {
+            super.removeEntity(entity);
+        });
+
     }
 
     public List<PlayerChunk> getPlayerChunkI() throws IllegalAccessException {
@@ -155,24 +222,24 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
 
         this.p = this.q;
         if (this.worldData.isThundering()) {
-            this.q = (float)((double)this.q + 0.01D);
+            this.q = (float) ((double) this.q + 0.01D);
         } else {
-            this.q = (float)((double)this.q - 0.01D);
+            this.q = (float) ((double) this.q - 0.01D);
         }
 
         this.q = MathHelper.a(this.q, 0.0F, 1.0F);
         this.n = this.o;
         if (this.worldData.hasStorm()) {
-            this.o = (float)((double)this.o + 0.01D);
+            this.o = (float) ((double) this.o + 0.01D);
         } else {
-            this.o = (float)((double)this.o - 0.01D);
+            this.o = (float) ((double) this.o - 0.01D);
         }
 
         this.o = MathHelper.a(this.o, 0.0F, 1.0F);
 
-        for(idx = 0; idx < this.players.size(); ++idx) {
-            if (((EntityPlayer)this.players.get(idx)).world == this) {
-                ((EntityPlayer)this.players.get(idx)).tickWeather();
+        for (idx = 0; idx < this.players.size(); ++idx) {
+            if (((EntityPlayer) this.players.get(idx)).world == this) {
+                ((EntityPlayer) this.players.get(idx)).tickWeather();
             }
         }
     }
