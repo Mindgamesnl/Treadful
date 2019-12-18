@@ -19,25 +19,25 @@ public class StorageModule {
     public ExecutorType getTypeByPlugin(Plugin plugin) {
         if (pluginThreadingType.containsKey(plugin.getName())) return byId(pluginThreadingType.getOrDefault(plugin.getName(), 0));
         ExecutorType type = byId(Treadful.getInstance().getConfig().getInt("data." + plugin.getName() + ".type"));
-        updateThreads(plugin, type);
+        updateThreads(plugin, type, false);
         pluginThreadingType.put(plugin.getName(), type.getLevel());
         return type;
     }
 
     public void setTypeForPlugin(Plugin plugin, int type) {
         pluginThreadingType.put(plugin.getName(), type);
-        updateThreads(plugin, ExecutorType.byId(type));
+        updateThreads(plugin, ExecutorType.byId(type), true);
         hasChanges = true;
     }
 
-    private void updateThreads(Plugin plugin, ExecutorType executorType) {
+    private void updateThreads(Plugin plugin, ExecutorType executorType, Boolean announce) {
         if (executorType == ISOLATED) {
             Message.toOp(Message.PREFIX.getMessage() + "Creating thread pool for plugin " + plugin.getName());
             Treadful.getInstance().getSchedulerProvider().register(plugin);
         } else {
             Treadful.getInstance().getSchedulerProvider().remove(plugin);
         }
-        Message.toOp(Message.PREFIX.getMessage() + "The plugin " + plugin.getName() + " now operates in " + executorType.name() + " mode.");
+        if (announce) Message.toOp(Message.PREFIX.getMessage() + "The plugin " + plugin.getName() + " now operates in " + executorType.name() + " mode.");
     }
 
     public void save() {

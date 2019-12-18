@@ -5,8 +5,6 @@ import com.craftmend.treadful.world.interfaces.InjectedTickable;
 import com.craftmend.treadful.world.tickers.*;
 import com.craftmend.treadful.world.wrappers.CustomWorldServer;
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
@@ -16,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WorldImplementation extends CustomWorldServer {
 
-    private InjectedTickable[] tickables;
+    private InjectedTickable[] tickables = new InjectedTickable[]{};
 
     public WorldImplementation(MinecraftServer minecraftserver, IDataManager idatamanager, WorldData worlddata, int i, MethodProfiler methodprofiler, World.Environment env, ChunkGenerator gen) {
         super(minecraftserver, idatamanager, worlddata, i, methodprofiler, env, gen);

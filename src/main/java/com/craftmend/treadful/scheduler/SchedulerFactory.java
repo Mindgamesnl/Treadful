@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SchedulerFactory {
 
-    public SchedulerImplementation inject() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+    public SchedulerImplementation inject() throws NoSuchFieldException, IllegalAccessException {
         CraftScheduler scheduler = (CraftScheduler) Bukkit.getScheduler();
 
         Treadful.getInstance().initializeProvider();

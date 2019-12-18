@@ -75,11 +75,7 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
 
     @Override
     public boolean addEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) {
-        if (j(entity)) {
-                super.addEntity(entity, spawnReason);
-            return true;
-        }
-        return true;
+        return super.addEntity(entity, spawnReason);
     }
 
     private boolean j(Entity entity) {
@@ -107,6 +103,11 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
 
     @Override
     public void kill(Entity entity) {
+        if (MinecraftServer.getServer().isMainThread()) {
+            super.kill(entity);
+            return;
+        }
+
         scheduleSync(() -> {
             super.kill(entity);
         });
@@ -115,6 +116,11 @@ public abstract class CustomWorldServer extends WorldServer implements HotSwappa
 
     @Override
     public void removeEntity(Entity entity) {
+        if (MinecraftServer.getServer().isMainThread()) {
+            super.removeEntity(entity);
+            return;
+        }
+
         scheduleSync(() -> {
             super.removeEntity(entity);
         });

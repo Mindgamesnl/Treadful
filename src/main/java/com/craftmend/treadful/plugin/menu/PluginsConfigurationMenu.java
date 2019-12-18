@@ -18,7 +18,7 @@ import java.util.List;
 public class PluginsConfigurationMenu extends Menu {
 
     public PluginsConfigurationMenu(int page) {
-        super(Treadful.getInstance(), Message.PREFIX.getMessage() + "plugins" + ChatColor.RESET + " - page " + page + " / " + ((int) Math.ceil(Bukkit.getPluginManager().getPlugins().length / 45) + 1), 6 * 9);
+        super(Treadful.getInstance(), Message.PREFIX.getMessage() + "Plugins" + ChatColor.RESET + " - page " + page + " / " + ((int) Math.ceil(Bukkit.getPluginManager().getPlugins().length / 45) + 1), 6 * 9);
 
         int pages = (int) Math.ceil(Bukkit.getPluginManager().getPlugins().length / 45) + 1;
 

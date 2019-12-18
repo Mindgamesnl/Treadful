@@ -96,7 +96,6 @@ public class SchedulerProvider {
     public CraftScheduler getScheduler(Plugin plugin) {
         AsyncScheduler scheduler = isolatedThreads.get(plugin.getName());
         if (scheduler != null) {
-            Message.toOp(Message.PREFIX.getMessage() + "Requested its custom scheduler");
             return scheduler.getScheduler();
         }
         return (CraftScheduler) Bukkit.getScheduler();

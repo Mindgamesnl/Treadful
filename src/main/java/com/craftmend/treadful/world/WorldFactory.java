@@ -1,6 +1,6 @@
 package com.craftmend.treadful.world;
 
-import com.craftmend.treadful.world.wrappers.CustomWorldServer;
+import com.craftmend.treadful.world.interfaces.HotSwappable;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import sun.reflect.ReflectionFactory;
@@ -11,7 +11,7 @@ import java.util.*;
 
 public class WorldFactory {
 
-    public CustomWorldServer overwriteWorld(CraftWorld world, Class type) {
+    public WorldServer overwriteWorld(CraftWorld world, Class type) {
         try {
             return copy(world, type);
         } catch (NoSuchFieldException e) {
@@ -24,11 +24,11 @@ public class WorldFactory {
         return null;
     }
 
-    private CustomWorldServer copy(CraftWorld craftWorld, Class target) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+    private WorldServer copy(CraftWorld craftWorld, Class target) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         WorldServer handle = craftWorld.getHandle();
 
-        CustomWorldServer copy = (CustomWorldServer) create(target, Object.class);
-        List<String> ignored = Arrays.asList(new String[]{"a"});
+        WorldServer copy = (WorldServer) create(target, Object.class);
+        Set<String> ignored = new HashSet<>(Arrays.asList(new String[]{"a"}));
 
         // apply world fields
         for (Field declaredField : World.class.getDeclaredFields()) {
@@ -54,8 +54,6 @@ public class WorldFactory {
             }
         }
 
-        copy.onSwap();
-
         Field serverField = CraftWorld.class.getDeclaredField("world");
         serverField.setAccessible(true);
 
@@ -65,6 +63,11 @@ public class WorldFactory {
         minecraftServer.worlds.add(copy);
 
         serverField.set(craftWorld, copy);
+
+        if (copy instanceof HotSwappable) {
+            HotSwappable hs = (HotSwappable) copy;
+            hs.onSwap();
+        }
 
         return copy;
     }

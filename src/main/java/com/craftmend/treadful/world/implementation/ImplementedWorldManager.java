@@ -14,6 +14,11 @@ public class ImplementedWorldManager extends WorldManager {
 
     @Override
     public void b(Entity entity) {
+        if (MinecraftServer.getServer().isMainThread()) {
+            super.b(entity);
+            return;
+        }
+
         customWorldServer.scheduleSync(() -> {
             super.b(entity);
         });
@@ -21,6 +26,11 @@ public class ImplementedWorldManager extends WorldManager {
 
     @Override
     public void a(Entity entity) {
+        if (MinecraftServer.getServer().isMainThread()) {
+            if (!customWorldServer.getTracker().trackedEntities.b(entity.getId())) super.a(entity);
+            return;
+        }
+
         if (customWorldServer.getTracker().trackedEntities.b(entity.getId())) return;
         customWorldServer.scheduleSync(() -> {
             if (!customWorldServer.getTracker().trackedEntities.b(entity.getId())) super.a(entity);
